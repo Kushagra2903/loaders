@@ -155,13 +155,12 @@ function RiseVariant({ size, color, fill, fillOpacity, strokeWidth }: VProps) {
         <clipPath id="rise-circle-clip"><circle cx={CIRCLE_CX} cy={CIRCLE_CY} r={CIRCLE_R} /></clipPath>
       </defs>
       <g clipPath="url(#rise-circle-clip)">
-        <motion.path
-          d={AREA_D}
-          fill={fill}
-          opacity={fillOpacity}
+        <motion.g
           animate={{ y: [RAW_VIEWBOX_SIZE, 0, 0, RAW_VIEWBOX_SIZE] }}
           transition={{ duration: total, times: t, repeat: Infinity, ease: PULSE_EASE }}
-        />
+        >
+          <path d={AREA_D} fill={fill} opacity={fillOpacity} />
+        </motion.g>
       </g>
       <Logo color={color} strokeWidth={strokeWidth} />
     </svg>
