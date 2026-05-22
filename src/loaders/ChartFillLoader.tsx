@@ -1,5 +1,5 @@
 import { animate, motion, useMotionValue, useTransform } from 'framer-motion';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import {
   AREA_D,
   CIRCLE_CX,
@@ -149,18 +149,36 @@ function RiseVariant({ size, color, fill, fillOpacity, strokeWidth }: VProps) {
   const total = riseDur + hold + drainDur;
   const t = [0, riseDur / total, (riseDur + hold) / total, 1];
 
+  const rectRef = useRef<SVGRectElement>(null);
+  const yMV = useMotionValue(RAW_VIEWBOX_SIZE);
+
+  useEffect(() => {
+    const animation = animate(yMV, [RAW_VIEWBOX_SIZE, 0, 0, RAW_VIEWBOX_SIZE], {
+      duration: total,
+      times: t,
+      repeat: Infinity,
+      ease: PULSE_EASE,
+    });
+    const unsub = yMV.on('change', (v) => {
+      rectRef.current?.setAttribute('y', String(v));
+    });
+    return () => { animation.stop(); unsub(); };
+  }, [yMV]);
+
   return (
     <svg width={size} height={size} viewBox={VIEWBOX} fill="none">
       <defs>
-        <clipPath id="rise-circle-clip"><circle cx={CIRCLE_CX} cy={CIRCLE_CY} r={CIRCLE_R} /></clipPath>
+        <clipPath id="rise-circle-clip">
+          <circle cx={CIRCLE_CX} cy={CIRCLE_CY} r={CIRCLE_R} />
+        </clipPath>
+        <clipPath id="rise-reveal-clip">
+          <rect ref={rectRef} x={0} y={RAW_VIEWBOX_SIZE} width={RAW_VIEWBOX_SIZE} height={RAW_VIEWBOX_SIZE} />
+        </clipPath>
       </defs>
       <g clipPath="url(#rise-circle-clip)">
-        <motion.g
-          animate={{ y: [RAW_VIEWBOX_SIZE, 0, 0, RAW_VIEWBOX_SIZE] }}
-          transition={{ duration: total, times: t, repeat: Infinity, ease: PULSE_EASE }}
-        >
+        <g clipPath="url(#rise-reveal-clip)">
           <path d={AREA_D} fill={fill} opacity={fillOpacity} />
-        </motion.g>
+        </g>
       </g>
       <Logo color={color} strokeWidth={strokeWidth} />
     </svg>
