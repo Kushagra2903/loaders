@@ -87,12 +87,16 @@ export function LoaderCard({ entry, palette }: Props) {
           pointerEvents: hovered ? 'auto' : 'none',
         }}
       >
-        <button style={btnStyle} onClick={(e) => copy('usage', e)}>
-          {copied === 'usage' ? '✓ copied' : 'Usage'}
-        </button>
-        <button style={btnStyle} onClick={(e) => copy('source', e)}>
-          {copied === 'source' ? '✓ copied' : 'Source'}
-        </button>
+        <Tooltip text="Import + JSX usage snippet">
+          <button style={btnStyle} onClick={(e) => copy('usage', e)}>
+            {copied === 'usage' ? '✓ copied' : 'Usage'}
+          </button>
+        </Tooltip>
+        <Tooltip text="Full source file (.tsx)">
+          <button style={btnStyle} onClick={(e) => copy('source', e)}>
+            {copied === 'source' ? '✓ copied' : 'Source'}
+          </button>
+        </Tooltip>
       </div>
 
       <div
@@ -132,6 +136,41 @@ export function LoaderCard({ entry, palette }: Props) {
           {entry.variant}
         </p>
       </div>
+    </div>
+  );
+}
+
+function Tooltip({ text, children }: { text: string; children: React.ReactNode }) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <div
+      style={{ position: 'relative', display: 'inline-flex' }}
+      onMouseEnter={() => setVisible(true)}
+      onMouseLeave={() => setVisible(false)}
+    >
+      {children}
+      {visible && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 'calc(100% + 7px)',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: 'rgba(0,0,0,0.72)',
+            color: '#fff',
+            fontSize: 10,
+            padding: '4px 9px',
+            borderRadius: 6,
+            whiteSpace: 'nowrap',
+            pointerEvents: 'none',
+            letterSpacing: '0.04em',
+            fontFamily: 'var(--font-mono)',
+            zIndex: 10,
+          }}
+        >
+          {text}
+        </div>
+      )}
     </div>
   );
 }
