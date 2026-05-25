@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 declare module 'flubber' {
   export interface InterpolateOptions {
     maxSegmentLength?: number;
